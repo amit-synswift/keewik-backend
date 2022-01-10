@@ -5,7 +5,8 @@ const allENV = {
       user: "root",
       password: "",
       database: "keewik",
-    }
+    },
+    secret: "keewik ke sath jude rho development server"
   },
   production: {
     database: {
@@ -13,7 +14,8 @@ const allENV = {
       user: "",
       password: "",
       database: "",
-    }
+    },
+    secret: "keewik ke sath jude rho production server"
   }
 };
 module.exports = allENV["development"];

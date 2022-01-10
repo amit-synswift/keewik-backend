@@ -1,6 +1,6 @@
 const Database = require("./Database");
 
-const getTables = (workstation) => {
+const getTables = () => {
   return new Promise((resolve) => {
     Database.query(
       "show tables",
@@ -16,6 +16,42 @@ const getTables = (workstation) => {
   });
 };
 
+const validateToken = (token, guid) => {
+  return new Promise((resolve) => {
+    Database.query(
+      "select (created_at + INTERVAL validity Day) as validTill from sessions where token=? and user_guid=?",
+      [token, guid],
+      function (err, result, fields) {
+        if (err) throw new Error(err);
+        if (result.length === 0) {
+          return resolve(null);
+        }
+        resolve(result);
+      }
+    );
+  });
+};
+
+const callSP = (sp, reqParams) => {
+  return new Promise((resolve) => {
+    Database.query(
+      "call " + sp + "("+reqParams+")",
+      [],
+      function (err, result, fields) {
+        if (err) throw new Error(err);
+        if (result.length === 0) {
+          return resolve(null);
+        }
+        resolve(result);
+      }
+    );
+  });
+};
+
+
+
 module.exports = {
-    getTables
+    getTables,
+    callSP,
+    validateToken
 };
