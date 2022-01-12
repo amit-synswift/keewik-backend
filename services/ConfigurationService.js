@@ -48,10 +48,25 @@ const callSP = (sp, reqParams) => {
   });
 };
 
-
+const checkMailUsername = (username, email) => {
+    return new Promise((resolve) => {
+        Database.query(
+            "select username, email from users where username = ? or email = ?",
+            [username, email],
+            function (err, result, fields) {
+                if (err) throw new Error(err);
+                if (result.length === 0) {
+                    return resolve(null);
+                }
+                resolve(result);
+            }
+        );
+    });
+};
 
 module.exports = {
     getTables,
     callSP,
-    validateToken
+    validateToken,
+    checkMailUsername
 };

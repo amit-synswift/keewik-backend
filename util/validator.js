@@ -45,7 +45,7 @@ const defined_standard = {
     },
 }
 
-exports.validateRequiredParameters = function (request, input_params) {
+exports.validateRequiredParameters = (request, input_params) => {
 
     input_params = input_params || [];
     var params = requestToParams(request);
@@ -92,17 +92,14 @@ exports.validateRequiredParameters = function (request, input_params) {
         });
 
         if (sp_argument_array) {
-            return resolve(_.toString(sp_argument_array))
-            // resolve(sp_argument_array.toString())
-            //callback();
+            return resolve(_.toString(sp_argument_array));
         } else {
-            reject()
-            //callback('Error Occured');
+            reject();
         }
     });
 };
 
 
-function requestToParams(request) {
+requestToParams = (request) => {
     return _.mergeWith({}, request.query, request.headers, request.params, request.body);
 }

@@ -2,7 +2,7 @@ const jwt = require("jsonwebtoken");
 const config = require("./config/config");
 const {validateToken} = require("./services/ConfigurationService");
 
-module.exports.isAuthorizedUser = async function (req, res, next) {
+module.exports.isAuthorizedUser = async (req, res, next) => {
     const token = req.headers['keewik-access-token'];
     if (!token) {
         return res
