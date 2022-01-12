@@ -32,7 +32,7 @@ router.post('/signup',async (req,res)=>{
         errors.push({"username":"Invalid value entered"})
     }
     if(!validatePassword(req.body.password)) {
-        errors.push({"password":"Invalid value entered"})
+        errors.push({"password":"Password SHould contain atleast 8 chars with 1 Caps, 1 small, 1 number and 1 special character"})
     }
     if(validateEmail(req.body.email.trim())) {
         req.body.email=req.body.email.trim().toLowerCase();
@@ -49,20 +49,22 @@ router.post('/signup',async (req,res)=>{
     }
 
     if(errors.length > 0)
-        res.json({"status":0,"message":errors});
+       return res.json({"status":0,"message":errors});
     else {
         let checkUniqueness = await configurationService.checkMailUsername(req.body.username,req.body.email);
-        if(checkUniqueness) {
-           if(checkUniqueness[0].username === req.body.username && checkUniqueness[0].email === req.body.username) {
+        console.log(checkUniqueness);
+        if (checkUniqueness) {
+           if (checkUniqueness[0].username === req.body.username && checkUniqueness[0].email === req.body.username) {
                errors.push({"username":"Already exist"});
                errors.push({"email":"Already exist"});
-           } else if(checkUniqueness[0].username === req.body.username) {
+           } else if (checkUniqueness[0].username === req.body.username) {
                errors.push({"username":"Already exist"})
-           } else if(checkUniqueness[0].email === req.body.username) {
+           } else if (checkUniqueness[0].email === req.body.email) {
                errors.push({"email":"Already exist"})
            }
-           if(errors.length > 0)
-                res.json({"status":0,"message":errors});
+           if (errors.length > 0) {
+               return res.json({"status": 0, "message": errors});
+           }
         }
     }
     req.body.guid=uuidv4();
