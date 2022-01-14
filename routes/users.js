@@ -26,11 +26,6 @@ router.post('/signup',async (req,res)=>{
     } else {
         errors.push({"lastname":"Invalid value entered"})
     }
-    if(validateUsername(req.body.username.trim())) {
-        req.body.username=req.body.username.trim().toLowerCase();
-    } else {
-        errors.push({"username":"Invalid value entered"})
-    }
     if(!validatePassword(req.body.password)) {
         errors.push({"password":"Password SHould contain atleast 8 chars with 1 Caps, 1 small, 1 number and 1 special character"})
     }
@@ -51,16 +46,10 @@ router.post('/signup',async (req,res)=>{
     if(errors.length > 0)
        return res.json({"status":0,"message":errors});
     else {
-        let checkUniqueness = await configurationService.checkMailUsername(req.body.username,req.body.email);
-        console.log(checkUniqueness);
+        let checkUniqueness = await configurationService.checkMailUsername(req.body.email);
         if (checkUniqueness) {
-           if (checkUniqueness[0].username === req.body.username && checkUniqueness[0].email === req.body.username) {
-               errors.push({"username":"Already exist"});
+           if (checkUniqueness[0].email === req.body.email) {
                errors.push({"email":"Already exist"});
-           } else if (checkUniqueness[0].username === req.body.username) {
-               errors.push({"username":"Already exist"})
-           } else if (checkUniqueness[0].email === req.body.email) {
-               errors.push({"email":"Already exist"})
            }
            if (errors.length > 0) {
                return res.json({"status": 0, "message": errors});
@@ -70,6 +59,7 @@ router.post('/signup',async (req,res)=>{
     req.body.guid=uuidv4();
     req.body.password=generateEncryptedPassword(req.body.password);
     req.body.accesstoken=generateToken(req.body.guid);
+    req.body.username=req.body.email.split('@')[1]+req.body.firstname[0]+req.body.lastname[0]+(Math.floor(Math.random() * 999999) + 1).toString().padStart(6,"k");
     console.log(req.body);
     validateRequiredParameters(req, reqParams).then( (sp_params)=> {
         configurationService.callSP('create_user', sp_params).then((result)=> {
