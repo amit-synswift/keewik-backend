@@ -48,11 +48,27 @@ const callSP = (sp, reqParams) => {
   });
 };
 
-const checkMailUsername = (email) => {
+const checkIfAlreadyMail = (email) => {
     return new Promise((resolve) => {
         Database.query(
-            "select email from users where email = ?",
+            "select email from users where email = ? and is_deleted=0",
             [email],
+            function (err, result, fields) {
+                if (err) throw new Error(err);
+                if (result.length === 0) {
+                    return resolve(null);
+                }
+                resolve(result);
+            }
+        );
+    });
+};
+
+const checkIfUserExists = (username) => {
+    return new Promise((resolve) => {
+        Database.query(
+            "select count(*) as total from users where (email = ? or username = ?) and isactive=1 and is_deleted=0",
+            [username, username],
             function (err, result, fields) {
                 if (err) throw new Error(err);
                 if (result.length === 0) {
@@ -68,5 +84,6 @@ module.exports = {
     getTables,
     callSP,
     validateToken,
-    checkMailUsername
+    checkIfAlreadyMail,
+    checkIfUserExists
 };
